@@ -1,5 +1,12 @@
 use std::collections::HashMap;
 
+pub enum Body{
+    Text(String),
+    Json(serde_json::Value),
+    Form(HashMap<String, String>),
+    Empty,
+}
+
 pub enum HttpMethod {
     GET,
     POST,
@@ -26,13 +33,14 @@ impl HttpMethod {
     }
 }
 
+#[allow(dead_code)]
 pub struct Request {
     pub method: HttpMethod,
     pub path: String,
     pub params: HashMap<String, Vec<String>>,
     pub http_version: String,
     pub headers: HashMap<String, String>,
-    pub body: Option<String>,
+    pub body: Body,
 }
 
 impl Request {
@@ -79,18 +87,12 @@ impl Request {
         }
 
         // Parse Body
-        let body = if let Some(length) = headers.get("Content-Length") {
-            let len: usize = length.parse().unwrap_or(0);
-            
-            // Find the start of the body by looking for the double CRLF that separates headers from the body
-            let body_start = request_str.find("\r\n\r\n").unwrap_or(0) + 4;
-
-            let body_content = &request_str[body_start..];
-
-            Some(body_content[..len.min(body_content.len())].to_string())
-        } else {
-            None
-        };
+        let raw_body = headers.get("Content-Length").and_then(|len| {
+            let len: usize = len.parse().ok()?;
+            let body_start = request_str.find("\r\n\r\n")? + 4; // Start of body is after the header section
+            Some(request_str[body_start..].chars().take(len).collect::<String>())
+        });
+        let body = parse_body(&headers, raw_body);
 
         Request {
             method: match method.as_str() {
@@ -109,5 +111,31 @@ impl Request {
             headers,
             body,
         }
+    }
+}
+
+fn parse_body(headers: &HashMap<String, String>, body_str: Option<String>) -> Body {
+    let content_type = headers.get("Content-Type").map(|s| s.as_str()).unwrap_or("");
+
+    match (content_type, body_str) {
+        (_, None) => Body::Empty,
+        ("text/plain", Some(body)) => Body::Text(body),
+        ("application/json", Some(body)) => {
+            match serde_json::from_str(&body) {
+                Ok(json) => Body::Json(json),
+                Err(_) => Body::Empty, // Fallback if JSON parsing fails
+            }
+        },
+        ("application/x-www-form-urlencoded", Some(body)) => {
+            let mut form_data = HashMap::new();
+            for pair in body.split('&') {
+                let mut kv = pair.split('=');
+                if let (Some(key), Some(value)) = (kv.next(), kv.next()) {
+                    form_data.insert(key.to_string(), value.to_string());
+                }
+            }
+            Body::Form(form_data)
+        }
+        (_, Some(_)) => Body::Text("".to_string()), // Fallback for unsupported content types
     }
 }

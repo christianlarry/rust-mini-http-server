@@ -1,0 +1,3 @@
+[alias]
+# Sekarang kamu tinggal ketik 'cargo dev'
+dev = "watch -q -c -x run"

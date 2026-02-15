@@ -53,7 +53,7 @@ Terinspirasi dari Express.js, tetapi dibangun secara low-level dengan Rust `std:
 
 Memperkuat fondasi framework sebelum menambah fitur baru.
 
-- [ ] **Complete HTTP Request Parsing** - Parse headers, query params, dan HTTP version
+- [✅] **Complete HTTP Request Parsing** - Parse headers, query params, dan HTTP version
 - [ ] **Request Body Parsing** - Support untuk plain text, JSON, dan form-urlencoded
 - [ ] **Response Headers** - Tambah method untuk set custom headers (Content-Type, Cache-Control, dll)
 - [ ] **Multiple Response Types** - Support `.json()`, `.html()`, `.status()`, dan `.send_file()`

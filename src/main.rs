@@ -24,7 +24,12 @@ fn main() {
     app.get("/test", |req, res| {
 
         // Log Debug req params
-        println!("Received request for / with params: {:?}", req.params);
+        match &req.body {
+            request::Body::Text(text) => println!("Request Body: {}", text),
+            request::Body::Json(json) => println!("Request Body: {}", json),
+            request::Body::Form(form_data) => println!("Request Form Data: {:?}", form_data),
+            request::Body::Empty => println!("Request Body is Empty"),
+        }
 
         res.send("Home");
     });
