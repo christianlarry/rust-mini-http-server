@@ -10,6 +10,8 @@ mod request;
 mod response;
 mod router;
 
+use crate::app::App;
+
 fn main() {
 
     // Load environment variables from .env file
@@ -17,7 +19,7 @@ fn main() {
     let port: String = env::var("SERVER_PORT").unwrap_or_else(|_| "8080".to_string());
     let host: String = env::var("SERVER_HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
 
-    let mut app = app::App::new();
+    let mut app = App::new();
 
     app.get("/", |_, res| {
         res.send("Home");
