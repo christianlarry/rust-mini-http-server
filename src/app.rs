@@ -1,5 +1,5 @@
 use crate::router::Router;
-use crate::request::Request;
+use crate::request::{HttpMethod, Request};
 use crate::response::Response;
 use crate::server::Server;
 
@@ -15,7 +15,7 @@ impl App {
     }
 
     pub fn get(&mut self, path: &str, handler: fn(&Request, &mut Response)) {
-        self.router.add("GET", path, handler);
+        self.router.add(&HttpMethod::GET, path, handler);
     }
 
     pub fn run(self, addr: &str) {

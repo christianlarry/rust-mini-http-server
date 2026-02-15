@@ -21,7 +21,11 @@ fn main() {
 
     let mut app = App::new();
 
-    app.get("/", |_, res| {
+    app.get("/test", |req, res| {
+
+        // Log Debug req params
+        println!("Received request for / with params: {:?}", req.params);
+
         res.send("Home");
     });
 

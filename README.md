@@ -8,7 +8,7 @@ Proyek ini adalah implementasi mini HTTP framework yang dibangun untuk tujuan pe
 - Design pattern untuk web framework
 - Low-level TCP connection handling
 
-Terinspirasi dari Express.js/NestJS, tetapi dibangun secara low-level dengan Rust `std::net`.
+Terinspirasi dari Express.js, tetapi dibangun secara low-level dengan Rust `std::net`.
 
 ---
 
