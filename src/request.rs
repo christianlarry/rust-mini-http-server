@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use urlencoding::decode;
 
 pub enum Body{
     Text(String),
@@ -63,9 +64,9 @@ impl Request {
             let query_string = &full_path[pos + 1..];
             path = full_path[..pos].to_string();
 
-            println!("Parsing query string: {}", query_string);
+            let decoded_query_string = decode(query_string).unwrap_or_default().to_string();
 
-            for pair in query_string.split('&') {
+            for pair in decoded_query_string.split('&') {
                 let mut kv = pair.split('=');
                 if let (Some(key), Some(value)) = (kv.next(), kv.next()) {
                     query_params.entry(key.to_string()).or_insert_with(Vec::new).push(value.to_string());

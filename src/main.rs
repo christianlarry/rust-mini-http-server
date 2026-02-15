@@ -31,6 +31,8 @@ fn main() {
             request::Body::Empty => println!("Request Body is Empty"),
         }
 
+        println!("Query Params: {:?}", req.params);
+
         res.send("Home");
     });
 
